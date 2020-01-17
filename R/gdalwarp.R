@@ -105,97 +105,99 @@
 #' @export
 
 gdalwarp <- function(
-		#help_general,formats, # Need to fix these
-		srcfile,dstfile,
-		s_srs,t_srs,to,
-		order,tps,rpc,geoloc,et,refine_gcps,te,te_srs,tr,tap,ts,ovr,wo,ot,wt,r,srcnodata,dstnodata,
-		dstalpha,wm,multi,q,of="GTiff",co,cutline,cl,cwhere,csql,cblend,crop_to_cutline,
-		overwrite,nomd,cvmd,setci,oo,doo,
-#		additional_commands,
-		output_Raster=FALSE,
-		ignore.full_scan=TRUE,
-		verbose=FALSE,
-		...)
+    #help_general,formats, # Need to fix these
+    srcfile,dstfile,
+    s_srs,t_srs,to,
+    order,tps,rpc,geoloc,et,refine_gcps,te,te_srs,tr,tap,ts,ovr,wo,ot,wt,r,srcnodata,dstnodata,
+    dstalpha,wm,multi,q,of="GTiff",co,cutline,cl,cwhere,csql,cblend,crop_to_cutline,
+    overwrite,nomd,cvmd,setci,oo,doo,
+    #		additional_commands,
+    output_Raster=FALSE,
+    ignore.full_scan=TRUE,
+    verbose=FALSE,
+    ...)
 {
-	if(output_Raster && (!requireNamespace("raster") || !requireNamespace("rgdal")))
-	{
-		warning("rgdal and/or raster not installed. Please install.packages(c('rgdal','raster')) or set output_Raster=FALSE")
-		return(NULL)
-	}
-	
-	parameter_values <- as.list(environment())
-	
-	if(verbose) message("Checking gdal_installation...")
-	gdal_setInstallation(ignore.full_scan=ignore.full_scan,verbose=verbose)
-	if(is.null(getOption("gdalUtils_gdalPath"))) return()
-	
-	# Place all gdal function variables into these groupings:
-	parameter_variables <- list(
-			logical = list(
-					varnames <- c(
-							"tps","rpc","geoloc","tap","dstalpha",
-							"multi","q","crop_to_cutline","overwrite","nomd",
-							"setci"
-					)),
-			vector = list(
-					varnames <- c(
-							"te","tr","ts"
-					)),
-			scalar = list(
-					varnames <- c(
-							"order","et","refine_gcps","wm",
-							"cblend"
-					)),
-			character = list(
-					varnames <- c(
-							"s_srs","t_srs","to","te_srs","ovr","ot","wt","r",
-							"srcnodata","dstnodata","of","cutline","cl",
-							"cwhere","csql","cvmd","oo","doo","dstfile"
-					)),
-			repeatable = list(
-					varnames <- c(
-							"wo","co","srcfile"
-					))
-	)
-	
-	parameter_order <- c(
-			"tps","rpc","geoloc","tap","dstalpha",
-			"multi","q","crop_to_cutline","overwrite","nomd",
-			"setci",
-			"te","te_srs","tr","ts","ovr",
-			"order","et","refine_gcps","wm",
-			"cblend",
-			"s_srs","t_srs","to","ot","wt","r",
-			"srcnodata","dstnodata","of","cutline","cl",
-			"cwhere","csql","cvmd",
-			"wo","co","oo","doo",
-			"srcfile","dstfile"
-	)
-	
-	parameter_noflags <- c("srcfile","dstfile")
-	
-	parameter_noquotes <- unlist(parameter_variables$vector)
-	
-	executable <- "gdalwarp"
-	
-	cmd <- gdal_cmd_builder(
-			executable=executable,
-			parameter_variables=parameter_variables,
-			parameter_values=parameter_values,
-			parameter_order=parameter_order,
-			parameter_noflags=parameter_noflags,
-			parameter_noquotes=parameter_noquotes,
-			gdal_installation_id=gdal_chooseInstallation(hasDrivers=of))
-	
-	if(verbose) message(paste("GDAL command being used:",cmd))
-	
-	cmd_output <- system(cmd,intern=TRUE) 
-	
-	if(output_Raster)
-	{
-		return(brick(dstfile))	
-	} else
-	{
-		return(NULL)
-	}		
+    if(output_Raster && (!requireNamespace("raster") || !requireNamespace("rgdal")))
+    {
+        warning("rgdal and/or raster not installed. Please install.packages(c('rgdal','raster')) or set output_Raster=FALSE")
+        return(NULL)
+    }
+    
+    parameter_values <- as.list(environment())
+    
+    if(verbose) message("Checking gdal_installation...")
+    gdal_setInstallation(ignore.full_scan=ignore.full_scan,verbose=verbose)
+    if(is.null(getOption("gdalUtils_gdalPath"))) return()
+
+    set_projlibpath()
+
+    # Place all gdal function variables into these groupings:
+    parameter_variables <- list(
+        logical = list(
+            varnames <- c(
+                "tps","rpc","geoloc","tap","dstalpha",
+                "multi","q","crop_to_cutline","overwrite","nomd",
+                "setci"
+            )),
+        vector = list(
+            varnames <- c(
+                "te","tr","ts"
+            )),
+        scalar = list(
+            varnames <- c(
+                "order","et","refine_gcps","wm",
+                "cblend"
+            )),
+        character = list(
+            varnames <- c(
+                "s_srs","t_srs","to","te_srs","ovr","ot","wt","r",
+                "srcnodata","dstnodata","of","cutline","cl",
+                "cwhere","csql","cvmd","oo","doo","dstfile"
+            )),
+        repeatable = list(
+            varnames <- c(
+                "wo","co","srcfile"
+            ))
+    )
+    
+    parameter_order <- c(
+        "tps","rpc","geoloc","tap","dstalpha",
+        "multi","q","crop_to_cutline","overwrite","nomd",
+        "setci",
+        "te","te_srs","tr","ts","ovr",
+        "order","et","refine_gcps","wm",
+        "cblend",
+        "s_srs","t_srs","to","ot","wt","r",
+        "srcnodata","dstnodata","of","cutline","cl",
+        "cwhere","csql","cvmd",
+        "wo","co","oo","doo",
+        "srcfile","dstfile"
+    )
+    
+    parameter_noflags <- c("srcfile","dstfile")
+    
+    parameter_noquotes <- unlist(parameter_variables$vector)
+    
+    executable <- "gdalwarp"
+    
+    cmd <- gdal_cmd_builder(
+        executable=executable,
+        parameter_variables=parameter_variables,
+        parameter_values=parameter_values,
+        parameter_order=parameter_order,
+        parameter_noflags=parameter_noflags,
+        parameter_noquotes=parameter_noquotes,
+        gdal_installation_id=gdal_chooseInstallation(hasDrivers=of))
+    
+    if(verbose) message(paste("GDAL command being used:",cmd))
+    
+    cmd_output <- system(cmd,intern=TRUE) 
+    
+    if(output_Raster)
+    {
+        return(brick(dstfile))	
+    } else
+    {
+        return(NULL)
+    }		
 }

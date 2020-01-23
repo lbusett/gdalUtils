@@ -93,6 +93,7 @@ gdal_cmd_builder <- function(executable,parameter_variables=c(),
 		gdal_installation_id=1,
 		python_util=FALSE)
 {
+    verbose <- TRUE
 	# path to executable check in here?
 	gdal_setInstallation()
 	if(is.null(getOption("gdalUtils_gdalPath"))) return()
@@ -373,7 +374,10 @@ gdal_cmd_builder <- function(executable,parameter_variables=c(),
 		if(!py_check) stop("Python not available, please fix.")
 		cmd <- paste(py_config()$python,cmd)
 	}
-	
-	return(cmd)
+	set_projlibpath()
+	if(verbose) message(paste("GDAL command being used:",cmd))
+	# browser()
+	cmd_output <- system(cmd,intern=TRUE) 
+	return(cmd_output)
 	
 }

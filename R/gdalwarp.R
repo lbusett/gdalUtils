@@ -129,8 +129,6 @@ gdalwarp <- function(
     gdal_setInstallation(ignore.full_scan=ignore.full_scan,verbose=verbose)
     if(is.null(getOption("gdalUtils_gdalPath"))) return()
 
-    set_projlibpath()
-
     # Place all gdal function variables into these groupings:
     parameter_variables <- list(
         logical = list(
@@ -188,10 +186,6 @@ gdalwarp <- function(
         parameter_noflags=parameter_noflags,
         parameter_noquotes=parameter_noquotes,
         gdal_installation_id=gdal_chooseInstallation(hasDrivers=of))
-    
-    if(verbose) message(paste("GDAL command being used:",cmd))
-    
-    cmd_output <- system(cmd,intern=TRUE) 
     
     if(output_Raster)
     {
